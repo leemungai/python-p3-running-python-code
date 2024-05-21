@@ -1,32 +1,38 @@
 #!/usr/bin/env python3
 
-from os import path
+import os
 import runpy
 import io
 import sys
+import pytest
 
 class TestAppPy:
     '''
-    app.py
+    Tests for the app.py file.
     '''
+
     def test_app_py_exists(self):
         '''
-        exists in lib directory
+        Checks if app.py exists in the lib directory.
         '''
-        assert(path.exists("lib/app.py"))
+        assert os.path.exists("lib/app.py"), "app.py does not exist in the lib directory"
 
     def test_app_py_runs(self):
         '''
-        is executable
+        Checks if app.py is executable.
         '''
         runpy.run_path("lib/app.py")
 
     def test_prints_hello_world(self):
         '''
-        prints "Hello World! Pass this test, please."
+        Checks if app.py prints "Hello World! Pass this test, please."
         '''
         captured_out = io.StringIO()
         sys.stdout = captured_out
-        runpy.run_path("lib/app.py")
-        sys.stdout = sys.__stdout__
-        assert(captured_out.getvalue() == "Hello World! Pass this test, please.\n")
+        try:
+            runpy.run_path("lib/app.py")
+        finally:
+            sys.stdout = sys.__stdout__
+        assert captured_out.getvalue() == "Hello World! Pass this test, please.\n", \
+            f"Unexpected output: {captured_out.getvalue()}"
+
